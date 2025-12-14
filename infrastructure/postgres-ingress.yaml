@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-tcp-microk8s-conf
+  namespace: ingress
+data:
+  5432: "mcp/postgres-service:5432"
+---
+# Additional TCP service exposure for direct PostgreSQL access
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-nodeport
+  namespace: mcp
+  labels:
+    app: postgres
+spec:
+  type: NodePort
+  ports:
+  - port: 5432
+    targetPort: 5432
+    nodePort: 30432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres
