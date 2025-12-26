@@ -1,0 +1,10 @@
+{
+	"servers": {
+		"my-mcp-server-bfb45725": {
+			"type": "stdio",
+			"command": "/home/dhartig/source/dhartig/aiagent/weather/target/debug/weather",
+			"args": []
+		}
+	},
+	"inputs": []
+}

@@ -16,6 +16,6 @@ type: Opaque
 data:
   # Username: postgres (base64 encoded)
   POSTGRES_USER: cG9zdGdyZXM=
-  # Password: aiagent_password (base64 encoded)
+  # Password: aiagent (base64 encoded)
   # To generate: echo -n 'your_password' | base64
   POSTGRES_PASSWORD: YWlhZ2VudA==
