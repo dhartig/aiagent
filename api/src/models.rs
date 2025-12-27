@@ -20,7 +20,7 @@ pub struct TemperatureResponse {
     pub samples_requested: u32,
     pub samples_found: u32,
     pub average_temperature: f64,
-    pub years_included: Vec<i32>,
+    pub temperatures: Vec<f64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -35,6 +35,18 @@ pub struct PrecipitationResponse {
     pub month: u32,
     pub samples_requested: u32,
     pub samples_found: u32,
-    pub total_precipitation: f64,
-    pub years_included: Vec<i32>,
+    pub precipitation_by_year: std::collections::HashMap<i32, f64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct YearlyPrecipitationRequest {
+    pub samples: u32,
+    pub location: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct YearlyPrecipitationResponse {
+    pub samples: u32,
+    pub samples_found: u32,
+    pub yearly_precipitation: std::collections::HashMap<i32, f64>,
 }

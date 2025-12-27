@@ -38,6 +38,18 @@ http GET localhost:3000/get_total_precipitation_by_month month==7 samples==5 loc
 http GET localhost:3000/get_total_precipitation_by_month month==12 samples==15 location=='Seattle'
 ```
 
+### 4. Get Yearly Precipitation
+```bash
+# Get yearly precipitation totals for the last 5 years
+http GET localhost:3000/get_yearly_precipitation samples==5 location=='Chicago'
+
+# Get yearly precipitation for the last 10 years
+http GET localhost:3000/get_yearly_precipitation samples==10 location=='Denver'
+
+# Get yearly precipitation for the last 3 years
+http GET localhost:3000/get_yearly_precipitation samples==3 location=='Boston'
+```
+
 ## Error Test Cases
 
 ### Invalid Parameters
@@ -50,6 +62,9 @@ http GET localhost:3000/get_average_temp_by_date day==32 month==6 samples==5 loc
 
 # Zero samples (should return 400 Bad Request)
 http GET localhost:3000/get_total_precipitation_by_month month==3 samples==0 location=='Denver'
+
+# Zero years back (should return 400 Bad Request)
+http GET localhost:3000/get_yearly_precipitation samples==0 location=='Miami'
 
 # Missing location parameter (should return 400 Bad Request)
 http GET localhost:3000/get_average_temp_by_date day==15 month==6 samples==5
@@ -68,6 +83,9 @@ curl "http://localhost:3000/get_average_temp_by_date?day=15&month=6&samples=5&lo
 
 # Get precipitation (location now required)
 curl "http://localhost:3000/get_total_precipitation_by_month?month=3&samples=10&location=Los%20Angeles"
+
+# Get yearly precipitation (location required)
+curl "http://localhost:3000/get_yearly_precipitation?samples=5&location=Chicago"
 ```
 
 ## Expected Response Formats
@@ -102,8 +120,25 @@ curl "http://localhost:3000/get_total_precipitation_by_month?month=3&samples=10&
   "month": 3,
   "samples_requested": 10,
   "samples_found": 8,
-  "total_precipitation": 145.6,
-  "years_included": [2016, 2017, 2018, 2020, 2021, 2022, 2024, 2025]
+  "precipitation_by_year": {
+    "2016": 45.6,
+    "2017": 23.4,
+    "2018": 67.2
+  }
+}
+```
+
+### Yearly Precipitation Response
+```json
+{
+  "samples": 5,
+  "samples_found": 4,
+  "yearly_precipitation": {
+    "2021": 245.6,
+    "2022": 189.3,
+    "2024": 312.8,
+    "2025": 156.4
+  }
 }
 ```
 

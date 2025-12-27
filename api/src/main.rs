@@ -32,6 +32,7 @@ async fn main() {
         .route("/get_locations", get(handlers::get_locations))
         .route("/get_average_temp_by_date", get(handlers::get_average_temp_by_date))
         .route("/get_total_precipitation_by_month", get(handlers::get_total_precipitation_by_month))
+        .route("/get_yearly_precipitation", get(handlers::get_yearly_precipitation))
         .layer(CorsLayer::permissive())
         .with_state(db_pool);
 

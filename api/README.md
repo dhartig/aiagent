@@ -120,6 +120,38 @@ GET /get_total_precipitation_by_month?month=3&samples=10&location=Los Angeles
 - If `PRCP` field is not available for a record, uses 0 as the value
 - Aggregates by year and then sums across all years
 
+### GET /get_yearly_precipitation
+
+Returns total yearly precipitation going back from the current year for a specific location.
+
+**Query Parameters:**
+- `samples` (required): Number of years to go back from current year
+- `location` (required): Filter results by specific location
+
+**Example Request:**
+```
+GET /get_yearly_precipitation?samples=5&location=Los Angeles
+```
+
+**Response:**
+```json
+{
+  "samples": 5,
+  "samples_found": 4,
+  "yearly_precipitation": {
+    "2021": 245.6,
+    "2022": 189.3,
+    "2024": 312.8,
+    "2025": 156.4
+  }
+}
+```
+
+**Yearly Precipitation Calculation:**
+- Sums all daily `PRCP` values for each entire year
+- Aggregates across all months and days in the year
+- Returns total precipitation by year as a key-value map
+
 ## Building for Production
 
 ```bash
