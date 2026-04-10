@@ -4,8 +4,13 @@ use rmcp::{
     handler::server::{router::tool::ToolRouter, wrapper::Parameters},
     model::*,
     schemars, tool, tool_handler, tool_router,
+    transport::{
+        StreamableHttpServerConfig, StreamableHttpService,
+        streamable_http_server::session::local::LocalSessionManager,
+    },
 };
-use serde::{Deserialize};
+use std::sync::Arc;
+use serde::Deserialize;
 use serde::de::DeserializeOwned;
 
 #[derive(serde::Deserialize, schemars::JsonSchema)]
@@ -199,8 +204,35 @@ impl ServerHandler for Weather {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let transport = (tokio::io::stdin(), tokio::io::stdout());
-    let service = Weather::new().serve(transport).await?;
-    service.waiting().await?;
+    tracing_subscriber::fmt::init();
+
+    let use_stdio = std::env::args().any(|a| a == "--stdio");
+
+    if use_stdio {
+        let transport = (tokio::io::stdin(), tokio::io::stdout());
+        let service = Weather::new().serve(transport).await?;
+        service.waiting().await?;
+    } else {
+        let port: u16 = std::env::var("PORT")
+            .ok()
+            .and_then(|p| p.parse().ok())
+            .unwrap_or(8080);
+        let bind_addr = format!("0.0.0.0:{port}");
+
+        let service = StreamableHttpService::new(
+            || Ok(Weather::new()),
+            Arc::new(LocalSessionManager::default()),
+            StreamableHttpServerConfig::default(),
+        );
+        let router = axum::Router::new().nest_service("/mcp", service);
+        let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
+        tracing::info!("MCP server listening on http://{bind_addr}/mcp");
+        axum::serve(listener, router)
+            .with_graceful_shutdown(async {
+                tokio::signal::ctrl_c().await.ok();
+            })
+            .await?;
+    }
+
     Ok(())
 }
